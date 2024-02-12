@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Fantasy Basketball Optimizer</title>
+    <style>
+        body {
+            text-align: center; /* Center-aligns the content */
+            font-family: Arial, sans-serif; /* Sets a default font */
+        }
+        .position-buttons, .display-count-form {
+            margin-bottom: 20px; /* Adds some space below the buttons and dropdown */
+        }
+        table {
+            margin-left: auto;
+            margin-right: auto; /* Centers the table */
+            border-collapse: collapse; /* Improves table appearance */
+        }
+        th, td {
+            border: 1px solid black; /* Adds borders to the table cells */
+            padding: 8px; /* Adds some padding inside table cells */
+        }
+        th {
+            background-color: #f2f2f2; /* Adds a background color to the table headers */
+        }
+    </style>
+</head>
+<body>
+<div class="position-buttons">
+    <a href="/?position=PG">PG</a>
+    <a href="/?position=SG">SG</a>
+    <a href="/?position=SF">SF</a>
+    <a href="/?position=PF">PF</a>
+    <a href="/?position=C">C</a>
+    <a href="/?position=G">G</a>
+    <a href="/?position=F">F</a>
+    <a href="/?position=UTIL">UTIL</a>
+</div>
+
+<!-- Display Count Dropdown with Position Retention -->
+<div class="display-count-form">
+    <form action="/" method="get">
+        <input type="hidden" name="position" value="{{ request.args.get('position', '') }}">
+        <label for="count">Display:</label>
+        <select name="count" id="count" onchange="this.form.submit()">
+            <option value="20" {% if current_count == '20' or current_count == 20 %}selected{% endif %}>20</option>
+            <option value="50" {% if current_count == '50' or current_count == 50 %}selected{% endif %}>50</option>
+            <option value="all" {% if current_count == 'all' %}selected{% endif %}>All</option>
+        </select>
+    </form>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Name&sort_order={{ 'desc' if sort_by == 'Name' and sort_order == 'asc' else 'asc' }}">Name</a></th>
+        <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Salary&sort_order={{ 'desc' if sort_by == 'Salary' and sort_order == 'asc' else 'asc' }}">Salary</a></th>
+        <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Position&sort_order={{ 'desc' if sort_by == 'Position' and sort_order == 'asc' else 'asc' }}">Position</a></th>
+        <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=AvgPointsPerGame&sort_order={{ 'desc' if sort_by == 'AvgPointsPerGame' and sort_order == 'asc' else 'asc' }}">Fantasy Points</a></th>
+        <th>Select/Deselect</th>
+    </tr>
+</thead>
+
+    <tbody>
+    {% for player in players %}
+    <tr>
+      <td>{{ player.Name }}</td>
+      <td>{{ player.Salary }}</td>
+      <td>{{ player.Position }}</td>
+      <td>{{ player.AvgPointsPerGame }}</td>
+      <!-- Ensure checkboxes are checked by default -->
+      <td><input type="checkbox" name="selected_player" value="{{ player['ID'] }}" checked></td>
+    </tr>
+  {% endfor %}
+</tbody>
+
+</table>
+
+</body>
+</html>
