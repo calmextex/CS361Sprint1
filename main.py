@@ -50,16 +50,21 @@ def index():
                            current_position=position, sort_by=sort_by, sort_order=sort_order)
 
 
+# @app.route('/optimize', methods=['POST'])
+# def optimize():
+#     lineup_optimizer = optimizer.Optimizer()
+#     lineup_optimizer.load_player_information()
+#     optimized_lineup = lineup_optimizer.optimization()
+#     return render_template('index.html', optimized_lineup=optimized_lineup)
+#
+# @app.route('/export_lineup')
+# def export_lineup():
+#     # upon clicking button, export the lineup (as a table in the html page) to a csv file
+
 if __name__ == '__main__':
     app.run(debug=True)
 
-# @app.route('/optimize', methods=['POST'])
-# def optimize():
-#     selected_players = request.form.getlist('selected_player')
-#     optimized_lineup = optimize_lineup(selected_players)  # Implement this
-#     # Optionally, save optimized lineup to session or database for exporting
-#     return render_template('index.html', optimized_lineup=optimized_lineup)
-#
+
 # @app.route('/export_lineup')
 # def export_lineup():
 #     # Retrieve the optimized lineup from session or database

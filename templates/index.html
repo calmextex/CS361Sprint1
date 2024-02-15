@@ -4,24 +4,59 @@
     <meta charset="UTF-8">
     <title>Daily Fantasy Basketball Optimizer</title>
     <style>
-        body {
-            text-align: center; /* Center-aligns the content */
-            font-family: Arial, sans-serif; /* Sets a default font */
+         body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .table-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
         }
         .position-buttons, .display-count-form {
-            margin-bottom: 20px; /* Adds some space below the buttons and dropdown */
+            margin-bottom: 20px;
+            width: 100%;
+            text-align: center;
         }
         table {
-            margin-left: auto;
-            margin-right: auto; /* Centers the table */
-            border-collapse: collapse; /* Improves table appearance */
+            border-collapse: collapse;
+            margin: 0 10px; /* Add some spacing between tables */
         }
         th, td {
-            border: 1px solid black; /* Adds borders to the table cells */
-            padding: 8px; /* Adds some padding inside table cells */
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left; /* Align text to left */
         }
         th {
-            background-color: #f2f2f2; /* Adds a background color to the table headers */
+            background-color: #f2f2f2;
+        }
+        .optimized-lineup-table {
+            border-collapse: collapse;
+        }
+
+        .optimized-lineup-table th, .optimized-lineup-table td {
+            padding: 8px;
+            border: 1px solid black;
+        }
+        .buttons-section button, .buttons-section form button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .buttons-section button:hover, .buttons-section form button:hover {
+            background-color: #45a049;
+        }
+
+        .buttons-section form {
+            display: inline;
         }
     </style>
 </head>
@@ -50,31 +85,60 @@
     </form>
 </div>
 
-<table>
-    <thead>
-    <tr>
-        <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Name&sort_order={{ 'desc' if sort_by == 'Name' and sort_order == 'asc' else 'asc' }}">Name</a></th>
-        <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Salary&sort_order={{ 'desc' if sort_by == 'Salary' and sort_order == 'asc' else 'asc' }}">Salary</a></th>
-        <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Position&sort_order={{ 'desc' if sort_by == 'Position' and sort_order == 'asc' else 'asc' }}">Position</a></th>
-        <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=AvgPointsPerGame&sort_order={{ 'desc' if sort_by == 'AvgPointsPerGame' and sort_order == 'asc' else 'asc' }}">Fantasy Points</a></th>
-        <th>Select/Deselect</th>
-    </tr>
-</thead>
+<div class="table-container">
+    <table>
+        <thead>
+        <tr>
+            <th>Select/Deselect</th>
+            <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Name&sort_order={{ 'desc' if sort_by == 'Name' and sort_order == 'asc' else 'asc' }}">Name</a></th>
+            <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Salary&sort_order={{ 'desc' if sort_by == 'Salary' and sort_order == 'asc' else 'asc' }}">Salary</a></th>
+            <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Position&sort_order={{ 'desc' if sort_by == 'Position' and sort_order == 'asc' else 'asc' }}">Position</a></th>
+            <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=AvgPointsPerGame&sort_order={{ 'desc' if sort_by == 'AvgPointsPerGame' and sort_order == 'asc' else 'asc' }}">Fantasy Points</a></th>
+            <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Custom&sort_order={{ 'desc' if sort_by == 'Custom' and sort_order == 'asc' else 'asc' }}">Custom</a></th>
 
-    <tbody>
-    {% for player in players %}
-    <tr>
-      <td>{{ player.Name }}</td>
-      <td>{{ player.Salary }}</td>
-      <td>{{ player.Position }}</td>
-      <td>{{ player.AvgPointsPerGame }}</td>
-      <!-- Ensure checkboxes are checked by default -->
-      <td><input type="checkbox" name="selected_player" value="{{ player['ID'] }}" checked></td>
-    </tr>
-  {% endfor %}
-</tbody>
+        </tr>
+    </thead>
 
-</table>
+        <tbody>
+        {% for player in players %}
+        <tr>
+            <!-- Ensure checkboxes are checked by default -->
+            <td><input type="checkbox" name="selected_player" value="{{ player['ID'] }}" checked></td>
+          <td>{{ player.Name }}</td>
+          <td>{{ player.Salary }}</td>
+          <td>{{ player.Position }}</td>
+          <td>{{ player.AvgPointsPerGame }}</td>
+          <td><input type="number" name="custom_{{ player['ID'] }}" placeholder="0"></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+    </table>
+  <table class="optimized-lineup-table">
+        <thead>
+            <tr>
+                <th>Position</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Preset positions -->
+            {% for position in ['PG', 'SG', 'SF', 'PF', 'C', 'G', 'F', 'UTIL'] %}
+            <tr>
+                <td>{{ position }}</td>
+                <td><!-- Filled after optimization --></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="buttons-section" style="text-align: center; margin-top: 20px;">
+    <button onclick="location.href='/advanced_settings'">Advanced Settings</button>
+    <button onclick="location.reload()">Reset</button>
+    <form action="/optimize" method="post" style="display: inline;">
+        <button type="submit">Optimize</button>
+    </form>
+    <button onclick="location.href='/export_lineup'">Export Lineup to CSV</button>
+</div>
 
 </body>
 </html>
