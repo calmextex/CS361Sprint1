@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Daily Fantasy Basketball Optimizer</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('select-all').addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('input[name="selected_player"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+        });
+    </script>
+
     <style>
          body {
             font-family: Arial, sans-serif;
@@ -18,7 +29,7 @@
         .position-buttons, .display-count-form {
             margin-bottom: 20px;
             width: 100%;
-            text-align: center;
+            text-align: left;
         }
         table {
             border-collapse: collapse;
@@ -61,6 +72,10 @@
     </style>
 </head>
 <body>
+<p> Create an NBA DFS Lineup! Simply click the optimize button. If you wish, you can set your own settings,
+filter by positions, search for specific players, select the players you want, and enter your own custom data to guide
+    your decision-making.</p>
+
 <div class="position-buttons">
     <a href="/?position=PG">PG</a>
     <a href="/?position=SG">SG</a>
@@ -70,6 +85,15 @@
     <a href="/?position=G">G</a>
     <a href="/?position=F">F</a>
     <a href="/?position=UTIL">UTIL</a>
+</div>
+
+<div class="search-form" style="text-align: center; margin-bottom: 20px;">
+    <form action="/" method="get">
+        <input type="hidden" name="position" value="{{ request.args.get('position', '') }}">
+        <input type="hidden" name="count" value="{{ current_count }}">
+        <input type="text" name="search" placeholder="Search player names..." value="{{ request.args.get('search', '') }}">
+        <button type="submit">Search</button>
+    </form>
 </div>
 
 <!-- Display Count Dropdown with Position Retention -->
@@ -89,7 +113,7 @@
     <table>
         <thead>
         <tr>
-            <th>Select/Deselect</th>
+            <th><input type = "checkbox" id="select-all" checked>Select/Deselect</th>
             <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Name&sort_order={{ 'desc' if sort_by == 'Name' and sort_order == 'asc' else 'asc' }}">Name</a></th>
             <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Salary&sort_order={{ 'desc' if sort_by == 'Salary' and sort_order == 'asc' else 'asc' }}">Salary</a></th>
             <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Position&sort_order={{ 'desc' if sort_by == 'Position' and sort_order == 'asc' else 'asc' }}">Position</a></th>
@@ -100,17 +124,19 @@
     </thead>
 
         <tbody>
-        {% for player in players %}
-        <tr>
-            <!-- Ensure checkboxes are checked by default -->
-            <td><input type="checkbox" name="selected_player" value="{{ player['ID'] }}" checked></td>
-          <td>{{ player.Name }}</td>
-          <td>{{ player.Salary }}</td>
-          <td>{{ player.Position }}</td>
-          <td>{{ player.AvgPointsPerGame }}</td>
-          <td><input type="number" name="custom_{{ player['ID'] }}" placeholder="0"></td>
-        </tr>
-      {% endfor %}
+    {% for player in players %}
+<tr>
+    <td><input type="checkbox" name="selected_player" value="{{ player['ID'] }}"
+        {% if session['selected_players'].get(player['ID'], False) %} checked {% endif %}></td>
+    <td>{{ player.Name }}</td>
+    <td>{{ player.Salary }}</td>
+    <td>{{ player.Position }}</td>
+    <td>{{ player.AvgPointsPerGame }}</td>
+    <td><input type="number" name="custom_{{ player['ID'] }}" placeholder="0"
+        value="{{ session['selected_players'].get('custom_' + player['ID']|string, '') }}"></td>
+</tr>
+{% endfor %}
+
     </tbody>
     </table>
   <table class="optimized-lineup-table">
