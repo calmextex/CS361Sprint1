@@ -1,8 +1,8 @@
-# Flask app for optimizer
-from flask import Flask, render_template, request, session
+
+from flask import Flask, render_template, request, jsonify
 import pandas as pd
-from optimizer import Optimizer
-import secrets
+import optimizer
+
 
 secret_key = secrets.token_urlsafe(32)
 app = Flask(__name__)
@@ -76,25 +76,17 @@ def index():
         checkbox_value = request.args.get(f"selected_player_{player['ID']}", 'off')
         player['IsSelected'] = True if checkbox_value != 'off' else False
 
-    return render_template('index.html', players=filtered_players, current_count=display_count,
-                           current_position=position, sort_by=sort_by, sort_order=sort_order,
-                           search_query=search_query, selected_players=selected_players,
-                           custom_inputs=custom_inputs)
-
-# @app.route('/optimize', methods=['POST'])
-# def optimize():
-#     lineup_optimizer = optimizer.Optimizer()
-#     lineup_optimizer.load_player_information()
-#     optimized_lineup = lineup_optimizer.optimization()
-#     return render_template('index.html', optimized_lineup=optimized_lineup)
-#
-
+@app.route('/optimize', methods=['POST'])
+def optimize():
+    lineup_optimizer = optimizer.Optimizer()
+    lineup_optimizer.load_player_information()
+    optimized_lineup = lineup_optimizer.optimization()
+    lineup_optimizer.export()
+    return render_template('index.html', optimized_lineup=optimized_lineup)
+# @app.route('/export_lineup')
+# def export_lineup():
+#     # upon clicking button, export the lineup (as a table in the html page) to a csv file
 if __name__ == '__main__':
     app.run(debug=True)
 
 
-# @app.route('/export_lineup')
-# def export_lineup():
-#     # Retrieve the optimized lineup from session or database
-#     csv_file = generate_csv(optimized_lineup)  # Implement this
-#     return send_file(csv_file, as_attachment=True, download_name='lineup.csv')

@@ -29,7 +29,9 @@
         .position-buttons, .display-count-form {
             margin-bottom: 20px;
             width: 100%;
-            text-align: left;
+
+            text-align: center;
+
         }
         table {
             border-collapse: collapse;
@@ -113,29 +115,31 @@ filter by positions, search for specific players, select the players you want, a
     <table>
         <thead>
         <tr>
-            <th><input type = "checkbox" id="select-all" checked>Select/Deselect</th>
+
+            <th>Select/Deselect</th>
+
             <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Name&sort_order={{ 'desc' if sort_by == 'Name' and sort_order == 'asc' else 'asc' }}">Name</a></th>
             <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Salary&sort_order={{ 'desc' if sort_by == 'Salary' and sort_order == 'asc' else 'asc' }}">Salary</a></th>
             <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Position&sort_order={{ 'desc' if sort_by == 'Position' and sort_order == 'asc' else 'asc' }}">Position</a></th>
             <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=AvgPointsPerGame&sort_order={{ 'desc' if sort_by == 'AvgPointsPerGame' and sort_order == 'asc' else 'asc' }}">Fantasy Points</a></th>
             <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Custom&sort_order={{ 'desc' if sort_by == 'Custom' and sort_order == 'asc' else 'asc' }}">Custom</a></th>
 
+
         </tr>
     </thead>
 
         <tbody>
-    {% for player in players %}
-<tr>
-    <td><input type="checkbox" name="selected_player" value="{{ player['ID'] }}"
-        {% if session['selected_players'].get(player['ID'], False) %} checked {% endif %}></td>
-    <td>{{ player.Name }}</td>
-    <td>{{ player.Salary }}</td>
-    <td>{{ player.Position }}</td>
-    <td>{{ player.AvgPointsPerGame }}</td>
-    <td><input type="number" name="custom_{{ player['ID'] }}" placeholder="0"
-        value="{{ session['selected_players'].get('custom_' + player['ID']|string, '') }}"></td>
-</tr>
-{% endfor %}
+        {% for player in players %}
+        <tr>
+            <!-- Ensure checkboxes are checked by default -->
+            <td><input type="checkbox" name="selected_player" value="{{ player['ID'] }}" checked></td>
+          <td>{{ player.Name }}</td>
+          <td>{{ player.Salary }}</td>
+          <td>{{ player.Position }}</td>
+          <td>{{ player.AvgPointsPerGame }}</td>
+          <td><input type="number" name="custom_{{ player['ID'] }}" placeholder="0"></td>
+        </tr>
+      {% endfor %}
 
     </tbody>
     </table>
@@ -148,7 +152,8 @@ filter by positions, search for specific players, select the players you want, a
         </thead>
         <tbody>
             <!-- Preset positions -->
-            {% for position in ['PG', 'SG', 'SF', 'PF', 'C', 'G', 'F', 'UTIL'] %}
+            {% for position in ['PG', 'SG', 'SF', 'PF', 'C', 'G', 'F', 'UTIL', Score] %}
+
             <tr>
                 <td>{{ position }}</td>
                 <td><!-- Filled after optimization --></td>
