@@ -1,6 +1,8 @@
+
 from pulp import *
 import csv
 from random import shuffle, choice
+
 # Before use, please download the PuLp library.
 # More information can be found at https://coin-or.github.io/pulp/
 
@@ -10,7 +12,9 @@ class Optimizer:
     # Dict variable to store the player information
     player_dictionary = {}
     # empty list to store the lineup information
+
     lineup = {}
+
     # min and max salary are preset for now. The user will modify this in future implementation
     min_salary = 49000
     max_salary = 50000
@@ -22,6 +26,7 @@ class Optimizer:
         """ Initialize the optimizer with the number of lineups to generate, which is set to 1"""
         self.lineups = int(lineups)
         # Create the optimization problem
+
         self.opt_problem = LpProblem('FantasyBasketball', LpMaximize)
     def load_player_information(self):
         """ Load the player information from the CSV file.
@@ -31,11 +36,13 @@ class Optimizer:
             for row in players:
                 player_name = row['Name'].replace(' ', '#')
                 team_name = row['TeamAbbrev']
+
                 player_id = row['ID']
                 salary = row['Salary']
                 projection = row['AvgPointsPerGame']
 
                 # Add players to the dictionary. For position, we split the string by '/' and store it as a list
+
                 position_data = row['Position'].split('/') if '/' in row['Position'] else [row['Position']]
                 self.player_dictionary[player_id] = {
                     'Name': player_name,

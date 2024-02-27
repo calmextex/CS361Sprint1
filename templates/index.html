@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Daily Fantasy Basketball Optimizer</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('select-all').addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('input[name="selected_player"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+        });
+    </script>
+
     <style>
          body {
             font-family: Arial, sans-serif;
@@ -18,7 +29,9 @@
         .position-buttons, .display-count-form {
             margin-bottom: 20px;
             width: 100%;
+
             text-align: center;
+
         }
         table {
             border-collapse: collapse;
@@ -61,6 +74,10 @@
     </style>
 </head>
 <body>
+<p> Create an NBA DFS Lineup! Simply click the optimize button. If you wish, you can set your own settings,
+filter by positions, search for specific players, select the players you want, and enter your own custom data to guide
+    your decision-making.</p>
+
 <div class="position-buttons">
     <a href="/?position=PG">PG</a>
     <a href="/?position=SG">SG</a>
@@ -70,6 +87,15 @@
     <a href="/?position=G">G</a>
     <a href="/?position=F">F</a>
     <a href="/?position=UTIL">UTIL</a>
+</div>
+
+<div class="search-form" style="text-align: center; margin-bottom: 20px;">
+    <form action="/" method="get">
+        <input type="hidden" name="position" value="{{ request.args.get('position', '') }}">
+        <input type="hidden" name="count" value="{{ current_count }}">
+        <input type="text" name="search" placeholder="Search player names..." value="{{ request.args.get('search', '') }}">
+        <button type="submit">Search</button>
+    </form>
 </div>
 
 <!-- Display Count Dropdown with Position Retention -->
@@ -89,12 +115,15 @@
     <table>
         <thead>
         <tr>
+
             <th>Select/Deselect</th>
+
             <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Name&sort_order={{ 'desc' if sort_by == 'Name' and sort_order == 'asc' else 'asc' }}">Name</a></th>
             <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Salary&sort_order={{ 'desc' if sort_by == 'Salary' and sort_order == 'asc' else 'asc' }}">Salary</a></th>
             <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Position&sort_order={{ 'desc' if sort_by == 'Position' and sort_order == 'asc' else 'asc' }}">Position</a></th>
             <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=AvgPointsPerGame&sort_order={{ 'desc' if sort_by == 'AvgPointsPerGame' and sort_order == 'asc' else 'asc' }}">Fantasy Points</a></th>
             <th><a href="/?position={{ current_position }}&count={{ current_count }}&sort_by=Custom&sort_order={{ 'desc' if sort_by == 'Custom' and sort_order == 'asc' else 'asc' }}">Custom</a></th>
+
 
         </tr>
     </thead>
@@ -111,6 +140,7 @@
           <td><input type="number" name="custom_{{ player['ID'] }}" placeholder="0"></td>
         </tr>
       {% endfor %}
+
     </tbody>
     </table>
   <table class="optimized-lineup-table">
@@ -123,6 +153,7 @@
         <tbody>
             <!-- Preset positions -->
             {% for position in ['PG', 'SG', 'SF', 'PF', 'C', 'G', 'F', 'UTIL', Score] %}
+
             <tr>
                 <td>{{ position }}</td>
                 <td><!-- Filled after optimization --></td>
